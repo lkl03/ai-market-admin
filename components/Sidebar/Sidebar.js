@@ -23,13 +23,14 @@ export default function Sidebar() {
           {/* Brand */}
           <Link href="/">
             <a
-              href="#pablo"
+              href="#"
               className="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
             >
-              Notus NextJS
+              AI Market
             </a>
           </Link>
-          {/* User */}
+          {/* 
+           User 
           <ul className="md:hidden items-center flex flex-wrap list-none">
             <li className="inline-block relative">
               <NotificationDropdown />
@@ -38,14 +39,14 @@ export default function Sidebar() {
               <UserDropdown />
             </li>
           </ul>
-          {/* Collapse */}
+           Collapse
           <div
             className={
               "md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:mt-4 md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded " +
               collapseShow
             }
           >
-            {/* Collapse header */}
+            Collapse header
             <div className="md:min-w-full md:hidden block pb-4 mb-4 border-b border-solid border-blueGray-200">
               <div className="flex flex-wrap">
                 <div className="w-6/12">
@@ -69,7 +70,7 @@ export default function Sidebar() {
                 </div>
               </div>
             </div>
-            {/* Form */}
+            Form
             <form className="mt-6 mb-4 md:hidden">
               <div className="mb-3 pt-0">
                 <input
@@ -80,13 +81,13 @@ export default function Sidebar() {
               </div>
             </form>
 
-            {/* Divider */}
+            Divider
             <hr className="my-4 md:min-w-full" />
-            {/* Heading */}
+            Heading
             <h6 className="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
               Admin Layout Pages
             </h6>
-            {/* Navigation */}
+            Navigation
 
             <ul className="md:flex-col md:min-w-full flex flex-col list-none">
               <li className="items-center">
@@ -186,13 +187,13 @@ export default function Sidebar() {
               </li>
             </ul>
 
-            {/* Divider */}
+            Divider
             <hr className="my-4 md:min-w-full" />
-            {/* Heading */}
+            Heading
             <h6 className="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
               Auth Layout Pages
             </h6>
-            {/* Navigation */}
+            Navigation
 
             <ul className="md:flex-col md:min-w-full flex flex-col list-none md:mb-4">
               <li className="items-center">
@@ -220,13 +221,13 @@ export default function Sidebar() {
               </li>
             </ul>
 
-            {/* Divider */}
+            Divider
             <hr className="my-4 md:min-w-full" />
-            {/* Heading */}
+            Heading
             <h6 className="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
               No Layout Pages
             </h6>
-            {/* Navigation */}
+            Navigation
 
             <ul className="md:flex-col md:min-w-full flex flex-col list-none md:mb-4">
               <li className="items-center">
@@ -254,13 +255,13 @@ export default function Sidebar() {
               </li>
             </ul>
 
-            {/* Divider */}
+            Divider
             <hr className="my-4 md:min-w-full" />
-            {/* Heading */}
+            Heading
             <h6 className="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
               Documentation
             </h6>
-            {/* Navigation */}
+            Navigation
             <ul className="md:flex-col md:min-w-full flex flex-col list-none md:mb-4">
               <li className="inline-flex">
                 <a
@@ -350,7 +351,7 @@ export default function Sidebar() {
                 </a>
               </li>
             </ul>
-          </div>
+          </div>*/}
         </div>
       </nav>
     </>

@@ -1,8 +1,14 @@
 import React from "react";
+import { useRouter } from 'next/router';
 
 import UserDropdown from "components/Dropdowns/UserDropdown.js";
 
 export default function Navbar() {
+  const router = useRouter();
+  const handleLogout = () => {
+    sessionStorage.removeItem('seedPhrase');
+    router.push('/');
+  };
   return (
     <>
       {/* Navbar */}
@@ -16,24 +22,8 @@ export default function Navbar() {
           >
             Dashboard
           </a>
-          {/* Form */}
-          <form className="md:flex hidden flex-row flex-wrap items-center lg:ml-auto mr-3">
-            <div className="relative flex w-full flex-wrap items-stretch">
-              <span className="z-10 h-full leading-snug font-normal absolute text-center text-blueGray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3">
-                <i className="fas fa-search"></i>
-              </span>
-              <input
-                type="text"
-                placeholder="Search here..."
-                className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
-              />
-            </div>
-          </form>
-          {/* User */}
-          <ul className="flex-col md:flex-row list-none items-center hidden md:flex">
-            <UserDropdown />
-          </ul>
         </div>
+        <button className="w-full max-w-120-px get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-400 active:bg-blueGray-500 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150" onClick={handleLogout}>Log Out</button>
       </nav>
       {/* End Navbar */}
     </>
