@@ -1,5 +1,6 @@
-import { React, useEffect, useState } from 'react';
+import { React, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import useState from 'react-usestateref';
 import Link from "next/link";
 
 
@@ -32,7 +33,12 @@ export default function Dashboard() {
   const [productsLoading, setProductsLoading] = useState(true);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null);
+  const [currentProduct, setCurrentProduct, currentProductRef] = useState(null);
+
+  const [dataRejectedEmail, setDataRejectedEmail] = useState([])
+  const [dataApprovedEmail, setDataApprovedEmail] = useState([])
+
+  const [userData, setUserData, userDataRef] = useState([])
 
   useEffect(() => {
     // check if seed phrase is in sessionStorage
@@ -62,8 +68,63 @@ export default function Dashboard() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if(dataRejectedEmail){
+      fetch("../../api/productrejected", {
+        "method": "POST",
+        "headers": { "content-type": "application/json" },
+        "body": JSON.stringify(dataRejectedEmail)
+      }).then(response => {
+        if (response.ok) {
+          // Show alert and reload page
+          if (window.confirm('Product rejected!')) {
+            window.location.reload();
+          }
+        } else {
+          console.error('Email was not sent', response);
+        }
+      }).catch(err => console.error(err));
+    }
+  }, [dataRejectedEmail]);
+
+  useEffect(() => {
+    if(dataApprovedEmail){
+      fetch("../../api/productapproved", {
+        "method": "POST",
+        "headers": { "content-type": "application/json" },
+        "body": JSON.stringify(dataApprovedEmail)
+      }).then(response => {
+        if (response.ok) {
+          // Show alert and reload page
+          if (window.confirm('Product approved!')) {
+            window.location.reload();
+          }
+        } else {
+          console.error('Email was not sent', response);
+        }
+      }).catch(err => console.error(err));
+    }
+  }, [dataApprovedEmail]);
+
   const handleProductClick = (product) => {
     setCurrentProduct(product);
+    const fetchUserInfo = async () => {
+      const userRef = collection(db, 'users');
+      const q = query(userRef, where('uid', '==', currentProductRef.current.publisher));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0]; // should be only one document
+        const userInfo = {
+          id: userDoc.id,
+          ...userDoc.data(),
+        };
+        setUserData(userInfo)
+        console.log(userDataRef.current)
+      } else {
+        return null; // or throw an error
+      }
+    };
+    fetchUserInfo()
     setModalIsOpen(true);
   };
 
@@ -88,10 +149,25 @@ export default function Dashboard() {
       publisher: currentProduct.publisher,
       totalLikes: currentProduct.totalLikes,
       totalPurchases: currentProduct.totalPurchases,
-      parentCollection: currentProduct.parentCollection
+      parentCollection: currentProduct.parentCollection,
     };
 
-    console.log(productData)
+        // Fetch user data based on publisher ID
+        const fetchUserInfo = async () => {
+          const userRef = collection(db, 'users');
+          const q = query(userRef, where('uid', '==', productData.publisher));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0]; // should be only one document
+            const userData = {
+              id: userDoc.id,
+              ...userDoc.data(),
+            };
+            return userData;
+          } else {
+            return null; // or throw an error
+          }
+        };
 
     // Update doc on the 'submitted' folder
     const docRef = doc(db, productData.parentCollection, productData.publisher, 'submitted', productData.productID);
@@ -104,9 +180,18 @@ export default function Dashboard() {
     const userDoc = doc(db, productData.parentCollection, productData.publisher, 'approved', productData.productID);
     await setDoc(userDoc, productData);
 
-    // Show alert and reload page
-    if (window.confirm('Product approved!')) {
-      window.location.reload();
+    // Call fetchUserInfo and update productData.publisher
+    const userData = await fetchUserInfo();
+    if (userData) {
+      productData.publisher = userData.name; // Replace publisher ID with name
+      setDataApprovedEmail({
+        email: userData.email,
+        name: userData.name,
+        product: productData.title
+      });
+    } else {
+      console.error('User not found');
+      return;
     }
   }
 
@@ -127,11 +212,26 @@ export default function Dashboard() {
       publisher: currentProduct.publisher,
       totalLikes: currentProduct.totalLikes,
       totalPurchases: currentProduct.totalPurchases,
-      parentCollection: currentProduct.parentCollection
+      parentCollection: currentProduct.parentCollection,
     };
-
-    console.log(productData)
-
+  
+    // Fetch user data based on publisher ID
+    const fetchUserInfo = async () => {
+      const userRef = collection(db, 'users');
+      const q = query(userRef, where('uid', '==', productData.publisher));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0]; // should be only one document
+        const userData = {
+          id: userDoc.id,
+          ...userDoc.data(),
+        };
+        return userData;
+      } else {
+        return null; // or throw an error
+      }
+    };
+  
     // Update doc on the 'submitted' folder
     const docRef = doc(db, productData.parentCollection, productData.publisher, 'submitted', productData.productID);
     await updateDoc(docRef, {
@@ -143,11 +243,20 @@ export default function Dashboard() {
     const userDoc = doc(db, productData.parentCollection, productData.publisher, 'rejected', productData.productID);
     await setDoc(userDoc, productData);
 
-    // Show alert and reload page
-    if (window.confirm('Product rejected!')) {
-      window.location.reload();
+    // Call fetchUserInfo and update productData.publisher
+    const userData = await fetchUserInfo();
+    if (userData) {
+      productData.publisher = userData.name; // Replace publisher ID with name
+      setDataRejectedEmail({
+        email: userData.email,
+        name: userData.name,
+        product: productData.title
+      });
+    } else {
+      console.error('User not found');
+      return;
     }
-  }
+  };
 
   return (
     <>
@@ -194,6 +303,9 @@ export default function Dashboard() {
                           <p>Total Likes: {currentProduct.totalLikes}</p>
                           <p>Total Purchases: {currentProduct.totalPurchases}</p>
                           <p>Parent Collection: {currentProduct.parentCollection}</p>
+                          <p>Is PayPal Logged: {userDataRef.current.userIsPaypalLogged === true ? 'true' : 'false'}</p>
+                          <p>PayPal Email: {userDataRef.current.paypalEmail}</p>
+                          <p>PayPal MerchantID: {userDataRef.current.paypalMerchantID}</p>
                           <button className="mt-4 get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-400 active:bg-blueGray-500 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150" onClick={() => approveProduct()}>Approve</button>
                           <button className="mt-4 get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-400 active:bg-blueGray-500 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150" onClick={() => rejectProduct()}>Reject</button>
                           <button className="mt-4 get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-blueGray-400 active:bg-blueGray-500 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150" onClick={handleModalClose}>Close</button>
