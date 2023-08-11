@@ -13,9 +13,9 @@ export default async (req = NextApiRequest, res = NextApiResponse) => {
     },
     templateId: 'd-54e6f34ff2c946b78a0648c8f8e1ec32',
     dynamic_template_data: {
-      url: 'https://aitropy.io',
+      url: 'https://aitropy.vercel.app',
       support_email: 'aitropy.io@gmail.com',
-      main_url: 'https://aitropy.io',
+      main_url: 'https://aitropy.vercel.app',
       email,
       name,
       product
